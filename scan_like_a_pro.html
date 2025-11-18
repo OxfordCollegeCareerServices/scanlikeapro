@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Scan Like a Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        :root {
+            --bg: #0b1020;
+            --card: #ffffff;
+            --accent: #3bb7e6;
+            --accent-soft: rgba(59, 183, 230, 0.15);
+            --accent-2: #ffb347;
+            --text-main: #111827;
+            --text-soft: #4b5563;
+            --pill: #111827;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top left, #1f2937, #020617 52%);
+            color: #f9fafb;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 32px 16px;
+        }
+
+        .shell {
+            width: 100%;
+            max-width: 1080px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.16), rgba(56, 189, 248, 0.10));
+            border-radius: 28px;
+            padding: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Floating shapes */
+        .orb,
+        .orb2 {
+            position: absolute;
+            border-radius: 999px;
+            pointer-events: none;
+            filter: blur(0.5px);
+            opacity: 0.75;
+            mix-blend-mode: screen;
+        }
+
+        .orb {
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #3bb7e6 45%, transparent 70%);
+            top: -80px;
+            right: -40px;
+            animation: floatOrb 10s ease-in-out infinite alternate;
+        }
+
+        .orb2 {
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle at 70% 20%, #ffffff, #ffb347 40%, transparent 70%);
+            bottom: -120px;
+            left: -40px;
+            animation: floatOrb2 13s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatOrb {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: translateY(24px) translateX(-14px);
+                opacity: 0.95;
+            }
+        }
+
+        @keyframes floatOrb2 {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: translateY(-28px) translateX(18px);
+                opacity: 0.9;
+            }
+        }
+
+        .panel {
+            position: relative;
+            z-index: 1;
+            background: radial-gradient(circle at top, #111827, #020617);
+            border-radius: 26px;
+            padding: 28px 24px 28px 24px;
+            color: #f9fafb;
+            overflow: hidden;
+        }
+
+        @media (min-width: 900px) {
+            .panel {
+                padding: 32px 32px 32px 32px;
+            }
+        }
+
+        /* Header */
+        .header {
+            display: grid;
+            grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.2fr);
+            gap: 24px;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .title-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 999px;
+            padding: 6px 12px 6px 6px;
+            box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.5);
+            margin-bottom: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .title-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            background: conic-gradient(from 180deg, #3bb7e6, #ffb347, #4ade80, #3bb7e6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .title-icon::before {
+            content: "";
+            position: absolute;
+            inset: 4px;
+            border-radius: inherit;
+            background: radial-gradient(circle at 50% 20%, #ffffff, #e5f6ff 40%, #bae6fd 70%);
+            opacity: 0.96;
+        }
+
+        .title-icon-inner {
+            position: relative;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            background: linear-gradient(135deg, #111827, #020617);
+            box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9), 0 4px 10px rgba(15, 23, 42, 0.7);
+            overflow: hidden;
+        }
+
+        .scan-bar {
+            position: absolute;
+            left: -30%;
+            right: -30%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #3bb7e6, #ffffff, #3bb7e6, transparent);
+            top: 40%;
+            animation: scanSweep 2.8s linear infinite;
+            opacity: 0.9;
+        }
+
+        @keyframes scanSweep {
+            0% {
+                transform: translateY(-9px);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateY(9px);
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(-9px);
+                opacity: 0;
+            }
+        }
+
+        .title-pill-label {
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #e5e7eb;
+        }
+
+        .hero-title {
+            font-size: clamp(28px, 3vw, 34px);
+            line-height: 1.05;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .hero-highlight {
+            color: #3bb7e6;
+        }
+
+        .hero-subtitle {
+            font-size: 15px;
+            color: #e5e7eb;
+            max-width: 540px;
+        }
+
+        .hero-subtitle strong {
+            font-weight: 600;
+            color: #fefce8;
+        }
+
+        .hero-badge-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .hero-badge {
+            font-size: 11px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.7);
+            color: #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hero-badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: #3bb7e6;
+            box-shadow: 0 0 10px rgba(59, 183, 230, 0.8);
+        }
+
+        .hero-visual {
+            justify-self: center;
+            position: relative;
+            width: 220px;
+            height: 220px;
+        }
+
+        @media (min-width: 900px) {
+            .hero-visual {
+                width: 260px;
+                height: 260px;
+            }
+        }
+
+        .phone-shell {
+            position: absolute;
+            inset: 14px;
+            border-radius: 32px;
+            background: radial-gradient(circle at top, #020617, #0b1120);
+            box-shadow:
+                0 12px 45px rgba(15, 23, 42, 0.85),
+                0 0 0 1px rgba(148, 163, 184, 0.65),
+                0 0 24px rgba(59, 130, 246, 0.35);
+            overflow: hidden;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 84px;
+            height: 16px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.96);
+        }
+
+        .phone-screen {
+            position: absolute;
+            inset: 32px 16px 16px 16px;
+            border-radius: 18px;
+            background: radial-gradient(circle at top left, #f9fafb, #dbeafe);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            animation: screenGlow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes screenGlow {
+            0% {
+                box-shadow: 0 0 0 rgba(59, 130, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 26px rgba(59, 130, 246, 0.45);
+            }
+        }
+
+        .screen-tag {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #6b7280;
+        }
+
+        .screen-main {
+            font-size: 12px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .screen-list {
+            font-size: 11px;
+            color: #4b5563;
+            list-style: none;
+            margin-top: 4px;
+        }
+
+        .screen-list li::before {
+            content: "•";
+            color: #3bb7e6;
+            margin-right: 5px;
+        }
+
+        .screen-scan-line {
+            margin-top: auto;
+            height: 4px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #22c55e, #3bb7e6, #a855f7);
+            animation: screenScan 2.4s linear infinite;
+        }
+
+        @keyframes screenScan {
+            0% {
+                transform: translateX(-60%);
+            }
+
+            100% {
+                transform: translateX(60%);
+            }
+        }
+
+        /* Content grid */
+        .grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+            gap: 18px;
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: #f9fafb;
+            border-radius: 18px;
+            padding: 16px 16px 14px 16px;
+            box-shadow:
+                0 14px 32px rgba(15, 23, 42, 0.35),
+                0 0 0 1px rgba(148, 163, 184, 0.7);
+            color: var(--text-main);
+            position: relative;
+            overflow: hidden;
+            transform-origin: center;
+            transition: transform 220ms ease, box-shadow 220ms ease, translate 220ms ease;
+            cursor: default;
+            isolation: isolate;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow:
+                0 20px 38px rgba(15, 23, 42, 0.45),
+                0 0 0 1px rgba(59, 130, 246, 0.6);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            opacity: 0;
+            background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.28), transparent 60%);
+            transform: translateX(30%);
+            transition: opacity 260ms ease, transform 260ms ease;
+            z-index: -1;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .card-tag-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .card-eyebrow {
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #6b7280;
+        }
+
+        .card-chip {
+            font-size: 10px;
+            padding: 3px 7px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.9);
+            background: rgba(255, 255, 255, 0.9);
+            color: #4b5563;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-chip-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: #22c55e;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 2px;
+            color: #0f172a;
+        }
+
+        .card-sub {
+            font-size: 12px;
+            color: var(--text-soft);
+            margin-bottom: 8px;
+        }
+
+        .list {
+            list-style: none;
+            font-size: 13px;
+            color: var(--text-main);
+            display: grid;
+            gap: 4px;
+        }
+
+        .list-item {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .list-bullet {
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            margin-top: 1px;
+        }
+
+        .bullet-primary {
+            background: rgba(59, 130, 246, 0.16);
+            color: #1d4ed8;
+        }
+
+        .bullet-soft {
+            background: rgba(148, 163, 184, 0.3);
+            color: #4b5563;
+        }
+
+        .bullet-danger {
+            background: rgba(248, 113, 113, 0.15);
+            color: #b91c1c;
+        }
+
+        .inline-label {
+            font-weight: 600;
+        }
+
+        .examples {
+            font-size: 12px;
+            margin-top: 6px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: var(--accent-soft);
+            border: 1px dashed rgba(59, 130, 246, 0.7);
+        }
+
+        .examples-title {
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: #0369a1;
+        }
+
+        .examples-code {
+            font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 11px;
+            background: rgba(15, 23, 42, 0.04);
+            padding: 2px 4px;
+            border-radius: 6px;
+            display: inline-block;
+            margin: 1px 4px 1px 0;
+        }
+
+        /* Bottom banner */
+        .bottom-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
+            gap: 18px;
+            margin-top: 18px;
+            align-items: stretch;
+        }
+
+        @media (max-width: 900px) {
+            .bottom-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .banner {
+            border-radius: 16px;
+            padding: 14px 14px 14px 14px;
+            border: 1px solid rgba(148, 163, 184, 0.7);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
+            box-shadow: 0 14px 34px rgba(15, 23, 42, 0.4);
+            color: #e5e7eb;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .banner-sub {
+            font-size: 12px;
+            color: #e5e7eb;
+            max-width: 340px;
+            margin-bottom: 8px;
+        }
+
+        .split {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 10px;
+        }
+
+        @media (max-width: 640px) {
+            .split {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .split-col-title {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .split-col-title.do {
+            color: #22c55e;
+        }
+
+        .split-col-title.avoid {
+            color: #fb7185;
+        }
+
+        .split-list {
+            list-style: none;
+            font-size: 12px;
+            display: grid;
+            gap: 4px;
+        }
+
+        .split-list li {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            gap: 6px;
+            align-items: flex-start;
+        }
+
+        .split-badge {
+            font-size: 10px;
+            border-radius: 999px;
+            padding: 2px 6px;
+            min-width: 18px;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.9);
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .split-badge.do {
+            border-color: rgba(34, 197, 94, 0.75);
+            color: #bbf7d0;
+        }
+
+        .split-badge.avoid {
+            border-color: rgba(248, 113, 113, 0.75);
+            color: #fecaca;
+        }
+
+        .tagline-card {
+            border-radius: 16px;
+            padding: 14px 14px 14px 14px;
+            background: #f9fafb;
+            box-shadow:
+                0 14px 32px rgba(15, 23, 42, 0.35),
+                0 0 0 1px rgba(148, 163, 184, 0.7);
+            color: #111827;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tagline-top {
+            font-size: 13px;
+            color: #4b5563;
+        }
+
+        .tagline-main {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .tagline-main span {
+            color: #3bb7e6;
+        }
+
+        .tagline-foot {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .tagline-ring {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 999px;
+            right: -20px;
+            bottom: -40px;
+            border: 2px dashed rgba(148, 163, 184, 0.9);
+            background: radial-gradient(circle at 30% 30%, rgba(59, 183, 230, 0.2), transparent 70%);
+            animation: ringSpin 18s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes ringSpin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Small fade-in on load */
+        .panel {
+            opacity: 0;
+            transform: translateY(12px);
+            animation: panelIn 340ms ease-out forwards;
+        }
+
+        @keyframes panelIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shell">
+        <div class="orb"></div>
+        <div class="orb2"></div>
+
+        <main class="panel" aria-label="Scan like a pro infographic">
+            <!-- Header -->
+            <section class="header">
+                <div>
+                    <div class="title-pill">
+                        <div class="title-icon">
+                            <div class="title-icon-inner">
+                                <div class="scan-bar"></div>
+                            </div>
+                        </div>
+                        <span class="title-pill-label">From photo to professional PDF</span>
+                    </div>
+                    <h1 class="hero-title">
+                        SCAN LIKE A <span class="hero-highlight">PRO</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Turn casual phone photos into clear, <strong>professional PDF documents</strong> that employers, schools, banks, landlords, and clinics can easily read and file.
+                    </p>
+                    <div class="hero-badge-row">
+                        <div class="hero-badge">
+                            <span class="hero-badge-dot"></span>
+                            <span>Clean PDFs = stronger first impression</span>
+                        </div>
+                        <div class="hero-badge">
+                            <span class="hero-badge-dot"></span>
+                            <span>Stop sending dark, cluttered page photos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="hero-visual" aria-hidden="true">
+                    <div class="phone-shell">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="screen-tag">Scan mode</div>
+                            <div class="screen-main">Consent Form.pdf</div>
+                            <ul class="screen-list">
+                                <li>Page edges detected</li>
+                                <li>Text is sharp and readable</li>
+                                <li>Background fully removed</li>
+                            </ul>
+                            <div class="screen-scan-line"></div>
+                        </div>
+                    </div>
+                </aside>
+            </section>
+
+            <!-- Content cards -->
+            <section class="grid" aria-label="Why it matters and how to scan">
+                <!-- WHY IT MATTERS -->
+                <article class="card">
+                    <div class="card-tag-row">
+                        <span class="card-eyebrow">Why it matters</span>
+                        <span class="card-chip">
+                            <span class="card-chip-dot"></span>
+                            First impression check
+                        </span>
+                    </div>
+                    <h2 class="card-title">Your files speak before you do</h2>
+                    <p class="card-sub">
+                        Clean PDF documents help people read, print, approve, and trust your information.
+                    </p>
+                    <ul class="list">
+                        <li class="list-item">
+                            <span class="list-bullet bullet-primary">1</span>
+                            <span>A clean PDF looks professional.</span>
+                        </li>
+                        <li class="list-item">
+                            <span class="list-bullet bullet-primary">2</span>
+                            <span>Text is easier to read and print.</span>
+                        </li>
+                        <li class="list-item">
+                            <span class="list-bullet bullet-primary">3</span>
+                            <span>Your documents are taken more seriously in hiring and other decisions.</span>
+                        </li>
+                        <li class="list-item">
+                            <span class="list-bullet bullet-danger">!</span>
+                            <span><span class="inline-label">Messy photos</span> with beds, legs, pillows, or clutter in the background can hurt your professional image.</span>
+                        </li>
+                    </ul>
+                </article>
+
+                <!-- HOW TO SCAN -->
+                <article class="card">
+                    <div class="card-tag-row">
+                        <span class="card-eyebrow">How to scan using your phone</span>
+                        <span class="card-chip">
+                            <span class="card-chip-dot"></span>
+                            4 simple steps
+                        </span>
+                    </div>
+                    <h2 class="card-title">From paper to PDF in minutes</h2>
+                    <p class="card-sub">
+                        No scanner needed. Your phone already knows how to do this.
+                    </p>
+                    <ul class="list">
+                        <li class="list-item">
+                            <span class="list-bullet bullet-primary">1</span>
+                            <span>Place the paper on a clean flat table or desk.</span>
+                        </li>
+                        <li class="list-item">
+                            <span class="list-bullet bullet-primary">2</span>
+                            <span>
+                                Open
+                                <span class="inline-label">Notes</span>,
+                                <span class="inline-label">Google Drive</span>,
+                                <span class="inline-label">Adobe Scan</span>,
+                                <span class="inline-label">Microsoft Lens</span>,
+                                or another scan app.
+                            </span>
+                        </li>
+                        <li class="list-item">
+                            <span class="list-bullet bullet-primary">3</span>
+                            <span>Choose <span class="inline-label">Scan Document</span>, capture the page, then save as PDF.</span>
+                        </li>
+                        <li class="list-item">
+                            <span class="list-bullet bullet-primary">4</span>
+                            <span>For many pages, use <span class="inline-label">Add Page</span> so everything stays in one PDF file.</span>
+                        </li>
+                    </ul>
+                </article>
+            </section>
+
+            <section class="grid" style="margin-top: 18px;" aria-label="Make it look professional and name files clearly">
+                <!-- MAKE IT LOOK PROFESSIONAL -->
+                <article class="card">
+                    <div class="card-tag-row">
+                        <span class="card-eyebrow">Make it look professional</span>
+                        <span class="card-chip">
+                            <span class="card-chip-dot"></span>
+                            Visual quality
+                        </span>
+                    </div>
+                    <h2 class="card-title">Treat every page like a mini poster</h2>
+                    <p class="card-sub">
+                        Small details make your documents look polished and workplace ready.
+                    </p>
+                    <ul class="list">
+                        <li class="list-item">
+                            <span class="list-bullet bullet-soft">•</span>
+                            <span>Use good lighting and smooth the paper.</span>
+                        </li>
+                        <li class="list-item">
+                            <span class="list-bullet bullet-soft">•</span>
+                            <span>Make sure only the paper is in the frame.</span>
+                        </li>
+                        <li class="list-item">
+                            <span class="list-bullet bullet-soft">•</span>
+                            <span>Zoom in and check that the text is clear and readable.</span>
+                        </li>
+                    </ul>
+                </article>
+
+                <!-- NAME YOUR FILES CLEARLY -->
+                <article class="card">
+                    <div class="card-tag-row">
+                        <span class="card-eyebrow">Name your files clearly</span>
+                        <span class="card-chip">
+                            <span class="card-chip-dot"></span>
+                            File hygiene
+                        </span>
+                    </div>
+                    <h2 class="card-title">Use smart names they can search</h2>
+                    <p class="card-sub">
+                        Clear file names keep your documents easy to find and hard to lose.
+                    </p>
+                    <div class="examples">
+                        <div class="examples-title">Use names like</div>
+                        <div>
+                            <span class="examples-code">FirstName LastName Resume</span>
+                            <span class="examples-code">FirstName LastName Consent Form CompanyName</span>
+                            <span class="examples-code">FirstName LastName Reference Form</span>
+                        </div>
+                    </div>
+                    <p class="card-sub" style="margin-top: 8px;">
+                        Avoid file names like <span class="examples-code">IMG1234</span> or <span class="examples-code">Screenshot</span>.
+                    </p>
+                </article>
+            </section>
+
+            <!-- Bottom row -->
+            <section class="bottom-row" aria-label="Do and avoid plus final message">
+                <!-- DO/AVOID -->
+                <article class="banner">
+                    <h2 class="banner-title">Send documents like a professional</h2>
+                    <p class="banner-sub">
+                        How you share files is part of how people read your application, forms, and requests.
+                    </p>
+                    <div class="split">
+                        <div>
+                            <div class="split-col-title do">Do this</div>
+                            <ul class="split-list">
+                                <li>
+                                    <span class="split-badge do">✓</span>
+                                    <span>Send one PDF instead of many separate photos.</span>
+                                </li>
+                                <li>
+                                    <span class="split-badge do">✓</span>
+                                    <span>Attach the PDF directly to your email.</span>
+                                </li>
+                                <li>
+                                    <span class="split-badge do">✓</span>
+                                    <span>Use a clear subject line such as <span class="inline-label">Resume for FirstName LastName</span>.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div class="split-col-title avoid">Avoid this</div>
+                            <ul class="split-list">
+                                <li>
+                                    <span class="split-badge avoid">✕</span>
+                                    <span>Photos with your bed, legs, feet, or clutter in the background.</span>
+                                </li>
+                                <li>
+                                    <span class="split-badge avoid">✕</span>
+                                    <span>Dark, blurry, or cut off pages.</span>
+                                </li>
+                                <li>
+                                    <span class="split-badge avoid">✕</span>
+                                    <span>Sharing documents through random links or social media.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- TAGLINE -->
+                <article class="tagline-card">
+                    <div class="tagline-top">
+                        Every scanned page is a tiny preview of how you show up in the real world.
+                    </div>
+                    <div class="tagline-main">
+                        Professional documents are part of your personal brand.
+                        <br />
+                        Start scanning like <span>someone who is ready for the workplace.</span>
+                    </div>
+                    <div class="tagline-foot">
+                        One clean PDF today is one less problem for your future self to fix.
+                    </div>
+                    <div class="tagline-ring"></div>
+                </article>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>
